@@ -70,11 +70,11 @@ router.put('/profile',
       }
 
       // 업데이트할 데이터 준비
-      const updateData: Partial<UpdateUserRequest> = {};
+      const updateData: any = {};
       if (name !== undefined) updateData.name = name;
       if (bio !== undefined) updateData.bio = bio;
-      if (skills !== undefined) updateData.skills = skills;
-      if (profileImage !== undefined) updateData.profileImage = profileImage;
+      if (skills !== undefined) updateData.skills = JSON.stringify(skills);
+      if (profileImage !== undefined) updateData.profile_image = profileImage;
 
       // 업데이트 실행
       const success = await userModel.update(userId, updateData);

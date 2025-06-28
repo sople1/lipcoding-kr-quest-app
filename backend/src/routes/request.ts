@@ -71,10 +71,9 @@ router.post('/match-requests',
 
       // 매칭 요청 생성
       const requestData = {
-        menteeId: userId,
-        mentorId,
-        message: message || '',
-        status: 'pending' as const
+        mentor_id: mentorId,
+        mentee_id: userId,
+        message: message || 'Please accept my mentoring request.',
       };
 
       const requestId = await matchRequestModel.create(requestData);
@@ -366,7 +365,7 @@ router.put('/requests/:id',
         return res.status(404).json({ error: 'Match request not found' });
       }
 
-      if (request.mentorId !== userId) {
+      if (request.mentor_id !== userId) {
         return res.status(403).json({ error: 'You can only update requests sent to you' });
       }
 
@@ -386,7 +385,7 @@ router.put('/requests/:id',
         }
 
         // 멘티가 이미 매칭되어 있는지 확인
-        const mentee = await userModel.findById(request.menteeId);
+        const mentee = await userModel.findById(request.mentee_id);
         if (!mentee) {
           return res.status(404).json({ error: 'Mentee not found' });
         }
@@ -404,11 +403,11 @@ router.put('/requests/:id',
 
       // 수락된 경우 사용자들의 매칭 상태 업데이트
       if (status === 'accepted') {
-        await userModel.updateMatchStatus(request.mentorId, true);
-        await userModel.updateMatchStatus(request.menteeId, true);
+        await userModel.updateMatchStatus(request.mentor_id, true);
+        await userModel.updateMatchStatus(request.mentee_id, true);
 
         // 다른 펜딩 요청들 자동 거절
-        await matchRequestModel.rejectOtherPendingRequests(request.mentorId, request.menteeId, requestId);
+        await matchRequestModel.rejectOtherPendingRequests(request.mentor_id, request.mentee_id, requestId);
       }
 
       // 업데이트된 요청 정보 반환
@@ -452,7 +451,7 @@ router.delete('/match-requests/:id',
         return res.status(404).json({ error: 'Match request not found' });
       }
 
-      if (request.menteeId !== userId) {
+      if (request.mentee_id !== userId) {
         return res.status(403).json({ error: 'You can only delete your own requests' });
       }
 
