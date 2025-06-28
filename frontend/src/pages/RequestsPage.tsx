@@ -100,13 +100,19 @@ const RequestsPage: React.FC = () => {
       setLoading(true);
       setError('');
 
-      const [receivedRes, sentRes] = await Promise.all([
-        api.get('/api/requests/received'),
-        api.get('/api/requests/sent')
-      ]);
-
-      setReceivedRequests(receivedRes.data || []);
-      setSentRequests(sentRes.data || []);
+      if (user?.role === 'mentor') {
+        // 멘토: 받은 요청만 조회
+        const receivedRes = await api.get('/match-requests/incoming');
+        console.log('멘토 받은 요청:', receivedRes);
+        setReceivedRequests(Array.isArray(receivedRes) ? receivedRes : []);
+        setSentRequests([]);
+      } else if (user?.role === 'mentee') {
+        // 멘티: 보낸 요청만 조회
+        const sentRes = await api.get('/match-requests/outgoing');
+        console.log('멘티 보낸 요청:', sentRes);
+        setReceivedRequests([]);
+        setSentRequests(Array.isArray(sentRes) ? sentRes : []);
+      }
     } catch (error: any) {
       const errorMessage = error.message || '요청 목록을 불러오는데 실패했습니다.';
       setError(errorMessage);
@@ -123,7 +129,7 @@ const RequestsPage: React.FC = () => {
     try {
       setActionLoading(prev => ({ ...prev, [requestId]: true }));
 
-      await api.post(`/api/requests/${requestId}/${action}`);
+      await api.put(`/match-requests/${requestId}/${action}`);
       
       showToast(
         action === 'accept' ? '요청 수락' : '요청 거절',
@@ -148,7 +154,7 @@ const RequestsPage: React.FC = () => {
     try {
       setActionLoading(prev => ({ ...prev, [requestId]: true }));
 
-      await api.delete(`/api/requests/${requestId}`);
+      await api.delete(`/match-requests/${requestId}`);
       
       showToast('요청 취소', '매칭 요청이 취소되었습니다.', 'success');
 
@@ -187,26 +193,36 @@ const RequestsPage: React.FC = () => {
         </Box>
       )}
 
-      {/* Tab Navigation */}
-      <HStack justify="center" bg="white" p={2} borderRadius="md" boxShadow="sm">
-        <Button
-          onClick={() => setActiveTab('received')}
-          colorScheme={activeTab === 'received' ? 'blue' : 'gray'}
-          variant={activeTab === 'received' ? 'solid' : 'ghost'}
-        >
-          받은 요청 ({receivedRequests.length})
-        </Button>
-        <Button
-          onClick={() => setActiveTab('sent')}
-          colorScheme={activeTab === 'sent' ? 'blue' : 'gray'}
-          variant={activeTab === 'sent' ? 'solid' : 'ghost'}
-        >
-          보낸 요청 ({sentRequests.length})
-        </Button>
-      </HStack>
+      {/* Tab Navigation - 역할에 따라 다르게 표시 */}
+      {user?.role === 'mentor' ? (
+        <Box textAlign="center" bg="white" p={4} borderRadius="md" boxShadow="sm">
+          <Text fontWeight="bold" color="blue.600">받은 요청 ({receivedRequests.length})</Text>
+        </Box>
+      ) : user?.role === 'mentee' ? (
+        <Box textAlign="center" bg="white" p={4} borderRadius="md" boxShadow="sm">
+          <Text fontWeight="bold" color="blue.600">보낸 요청 ({sentRequests.length})</Text>
+        </Box>
+      ) : (
+        <HStack justify="center" bg="white" p={2} borderRadius="md" boxShadow="sm">
+          <Button
+            onClick={() => setActiveTab('received')}
+            colorScheme={activeTab === 'received' ? 'blue' : 'gray'}
+            variant={activeTab === 'received' ? 'solid' : 'ghost'}
+          >
+            받은 요청 ({receivedRequests.length})
+          </Button>
+          <Button
+            onClick={() => setActiveTab('sent')}
+            colorScheme={activeTab === 'sent' ? 'blue' : 'gray'}
+            variant={activeTab === 'sent' ? 'solid' : 'ghost'}
+          >
+            보낸 요청 ({sentRequests.length})
+          </Button>
+        </HStack>
+      )}
 
-      {/* Received Requests Tab */}
-      {activeTab === 'received' && (
+      {/* Requests Content - 역할에 따라 다르게 표시 */}
+      {user?.role === 'mentor' && (
         <VStack gap={4} align="stretch">
           {receivedRequests.length === 0 ? (
             <Box textAlign="center" py={10} bg="white" borderRadius="md" boxShadow="sm">
@@ -288,8 +304,7 @@ const RequestsPage: React.FC = () => {
         </VStack>
       )}
 
-      {/* Sent Requests Tab */}
-      {activeTab === 'sent' && (
+      {user?.role === 'mentee' && (
         <VStack gap={4} align="stretch">
           {sentRequests.length === 0 ? (
             <Box textAlign="center" py={10} bg="white" borderRadius="md" boxShadow="sm">

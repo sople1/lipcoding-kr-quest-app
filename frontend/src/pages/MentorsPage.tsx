@@ -53,6 +53,7 @@ const MentorsPage: React.FC = () => {
       setLoading(true);
       setError('');
       const response = await api.get('/mentors');
+      console.log('멘토 목록 응답:', response);
       setMentors(response.mentors || []);
     } catch (error: any) {
       const errorMessage = error.message || '멘토 목록을 불러오는데 실패했습니다.';
@@ -208,7 +209,7 @@ const MentorsPage: React.FC = () => {
                         </Text>
                       )}
 
-                      {mentor.skills && mentor.skills.length > 0 && (
+                      {Array.isArray(mentor.skills) && mentor.skills.length > 0 && (
                         <Box>
                           <Text fontSize="sm" fontWeight="bold" mb={2}>
                             제공 가능한 스킬:
@@ -217,7 +218,7 @@ const MentorsPage: React.FC = () => {
                             {mentor.skills.map((skill) => (
                               <Badge
                                 key={skill}
-                                colorPalette="blue"
+                                colorScheme="blue"
                                 size="sm"
                                 borderRadius="full"
                                 px={2}
@@ -232,7 +233,7 @@ const MentorsPage: React.FC = () => {
 
                       <HStack w="100%" justify="space-between">
                         <Badge
-                          colorPalette={mentor.is_matched ? 'red' : 'green'}
+                          colorScheme={mentor.is_matched ? 'red' : 'green'}
                           size="sm"
                         >
                           {mentor.is_matched ? '매칭됨' : '매칭 가능'}
@@ -240,7 +241,7 @@ const MentorsPage: React.FC = () => {
 
                         <Button
                           size="sm"
-                          colorPalette="blue"
+                          colorScheme="blue"
                           onClick={() => handleMatchRequest(mentor.id)}
                           disabled={mentor.is_matched || user?.is_matched}
                           loading={requestingMentorId === mentor.id}

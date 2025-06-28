@@ -110,6 +110,32 @@ export class Database {
   }
 
   /**
+   * Parse skills from database string to array
+   */
+  private parseSkills(skillsString: string | null): string[] {
+    if (!skillsString) return [];
+    try {
+      return JSON.parse(skillsString);
+    } catch {
+      // Fallback: if it's not JSON, treat as comma-separated string
+      return skillsString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    }
+  }
+
+  /**
+   * Format user data with parsed skills
+   */
+  private formatUserData(row: DbUser): any {
+    if (row && row.skills) {
+      return {
+        ...row,
+        skills: this.parseSkills(row.skills)
+      };
+    }
+    return row;
+  }
+
+  /**
    * Find user by email
    */
   async findUserByEmail(email: string): Promise<DbUser | null> {
@@ -121,7 +147,7 @@ export class Database {
           if (err) {
             reject(err);
           } else {
-            resolve(row || null);
+            resolve(row ? this.formatUserData(row) : null);
           }
         }
       );
@@ -140,7 +166,7 @@ export class Database {
           if (err) {
             reject(err);
           } else {
-            resolve(row || null);
+            resolve(row ? this.formatUserData(row) : null);
           }
         }
       );

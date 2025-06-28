@@ -10,12 +10,14 @@ import { body, validationResult } from 'express-validator';
  */
 export const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Increased limit for development: 1000 requests per windowMs
   message: {
     error: 'Too many requests from this IP, please try again later.',
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limiting in development
+  skip: (req) => process.env.NODE_ENV === 'development',
 });
 
 /**
@@ -23,12 +25,14 @@ export const rateLimiter = rateLimit({
  */
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 auth requests per windowMs
+  max: 100, // Increased for development: 100 auth requests per windowMs
   message: {
     error: 'Too many authentication attempts, please try again later.',
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limiting in development
+  skip: (req) => process.env.NODE_ENV === 'development',
 });
 
 /**

@@ -71,7 +71,7 @@ const ProfilePage: React.FC = () => {
     setError('');
 
     try {
-      await api.put('/api/user/profile', {
+      await api.put('/profile', {
         name: formData.name,
         bio: formData.bio,
         skills
