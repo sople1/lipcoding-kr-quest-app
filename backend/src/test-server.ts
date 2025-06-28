@@ -9,7 +9,7 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-const app = express();
+const app: express.Application = express();
 const port = process.env.PORT || 8080;
 
 // Basic middleware
