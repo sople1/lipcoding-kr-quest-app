@@ -5,7 +5,7 @@ import { userModel } from '../models/user.model.js';
 import { AuthService } from '../middleware/auth.js';
 import type { CreateMatchRequestRequest, UpdateMatchRequestRequest } from '../types/index.js';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 const authService = new AuthService();
 
 /**
