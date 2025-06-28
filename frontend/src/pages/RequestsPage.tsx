@@ -100,20 +100,34 @@ const RequestsPage: React.FC = () => {
       setLoading(true);
       setError('');
 
-      if (user?.role === 'mentor') {
+      console.log('🔍 RequestsPage - 사용자 정보:', user);
+      console.log('🔍 RequestsPage - 사용자 역할:', user?.role);
+
+      if (!user) {
+        console.log('❌ 사용자 정보가 없어서 API 호출을 중단합니다.');
+        return;
+      }
+
+      if (user.role === 'mentor') {
         // 멘토: 받은 요청만 조회
+        console.log('📞 멘토로서 /match-requests/incoming 호출 중...');
         const receivedRes = await api.get('/match-requests/incoming');
-        console.log('멘토 받은 요청:', receivedRes);
+        console.log('✅ 멘토 받은 요청 응답:', receivedRes);
         setReceivedRequests(Array.isArray(receivedRes) ? receivedRes : []);
         setSentRequests([]);
-      } else if (user?.role === 'mentee') {
+      } else if (user.role === 'mentee') {
         // 멘티: 보낸 요청만 조회
+        console.log('📞 멘티로서 /match-requests/outgoing 호출 중...');
         const sentRes = await api.get('/match-requests/outgoing');
-        console.log('멘티 보낸 요청:', sentRes);
+        console.log('✅ 멘티 보낸 요청 응답:', sentRes);
+        console.log('✅ 응답 타입:', typeof sentRes, 'isArray:', Array.isArray(sentRes));
         setReceivedRequests([]);
         setSentRequests(Array.isArray(sentRes) ? sentRes : []);
+      } else {
+        console.log('❌ 알 수 없는 사용자 역할:', user.role);
       }
     } catch (error: any) {
+      console.error('❌ API 호출 오류:', error);
       const errorMessage = error.message || '요청 목록을 불러오는데 실패했습니다.';
       setError(errorMessage);
       showToast('로딩 실패', errorMessage, 'error');
@@ -169,8 +183,14 @@ const RequestsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadRequests();
-  }, []);
+    console.log('🔄 useEffect 트리거됨 - user:', user);
+    if (user) {
+      console.log('✅ 사용자 정보가 있음, loadRequests 호출');
+      loadRequests();
+    } else {
+      console.log('❌ 사용자 정보가 없음, loadRequests 호출하지 않음');
+    }
+  }, [user]);
 
   if (loading) {
     return (
