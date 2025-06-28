@@ -1,0 +1,36 @@
+{
+  "name": "mentor-mentee-matching-app",
+  "version": "1.0.0",
+  "description": "멘토-멘티 매칭 앱",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "pnpm run --parallel dev",
+    "build": "pnpm run --recursive build",
+    "start": "pnpm run --parallel start",
+    "test": "pnpm run --recursive test",
+    "lint": "pnpm run --recursive lint",
+    "install:all": "pnpm install",
+    "frontend:dev": "pnpm --filter frontend dev",
+    "frontend:build": "pnpm --filter frontend build",
+    "frontend:start": "pnpm --filter frontend start",
+    "backend:dev": "pnpm --filter backend dev",
+    "backend:build": "pnpm --filter backend build",
+    "backend:start": "pnpm --filter backend start"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
