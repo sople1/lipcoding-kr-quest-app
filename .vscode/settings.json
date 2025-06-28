@@ -1,0 +1,5 @@
+{
+    "accessibility.voice.speechLanguage": "ko-KR",
+    "chat.agent.enabled": true,
+    "github.copilot.chat.agent.thinkingTool": true
+}
