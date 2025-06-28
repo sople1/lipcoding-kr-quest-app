@@ -230,7 +230,7 @@ const SignupPage: React.FC = () => {
                   />
                   <Button
                     onClick={addSkill}
-                    colorScheme="blue"
+                    colorPalette="blue"
                     variant="outline"
                     size="sm"
                   >
@@ -272,7 +272,7 @@ const SignupPage: React.FC = () => {
 
               <Button
                 type="submit"
-                colorScheme="blue"
+                colorPalette="blue"
                 w="100%"
                 loading={loading}
               >

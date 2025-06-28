@@ -142,7 +142,7 @@ const MentorsPage: React.FC = () => {
     <VStack spacing={6} align="stretch">
       <HStack justify="space-between">
         <Heading size="lg">멘토 찾기</Heading>
-        <Button onClick={loadMentors} isLoading={loading}>
+        <Button onClick={loadMentors} loading={loading}>
           새로고침
         </Button>
       </HStack>
@@ -216,7 +216,7 @@ const MentorsPage: React.FC = () => {
                             <Wrap>
                               {mentor.skills.map((skill) => (
                                 <WrapItem key={skill}>
-                                  <Tag size="sm" colorScheme="blue">
+                                  <Tag size="sm" colorPalette="blue">
                                     {skill}
                                   </Tag>
                                 </WrapItem>
@@ -227,7 +227,7 @@ const MentorsPage: React.FC = () => {
 
                         <HStack w="100%" justify="space-between">
                           <Badge
-                            colorScheme={mentor.is_matched ? 'red' : 'green'}
+                            colorPalette={mentor.is_matched ? 'red' : 'green'}
                             size="sm"
                           >
                             {mentor.is_matched ? '매칭됨' : '매칭 가능'}
@@ -235,11 +235,10 @@ const MentorsPage: React.FC = () => {
 
                           <Button
                             size="sm"
-                            colorScheme="blue"
+                            colorPalette="blue"
                             onClick={() => sendMatchRequest(mentor.id)}
-                            isDisabled={mentor.is_matched || user?.is_matched}
-                            isLoading={requestingMentorId === mentor.id}
-                            loadingText="요청 중..."
+                            disabled={mentor.is_matched || user?.is_matched}
+                            loading={requestingMentorId === mentor.id}
                           >
                             {mentor.is_matched 
                               ? '매칭됨' 

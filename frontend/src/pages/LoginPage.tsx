@@ -111,26 +111,25 @@ const LoginPage: React.FC = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="비밀번호를 입력하세요"
-                      focusBorderColor="blue.500"
                     />
                     <InputRightElement>
                       <IconButton
                         aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
-                        icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
                         variant="ghost"
                         size="sm"
                         onClick={() => setShowPassword(!showPassword)}
-                      />
+                      >
+                        {showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                      </IconButton>
                     </InputRightElement>
                   </InputGroup>
                 </FormControl>
 
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  colorPalette="blue"
                   w="100%"
-                  isLoading={loading}
-                  loadingText="로그인 중..."
+                  loading={loading}
                 >
                   로그인
                 </Button>
@@ -139,8 +138,8 @@ const LoginPage: React.FC = () => {
 
             <Text color="gray.600">
               계정이 없으신가요?{' '}
-              <Link as={RouterLink} to="/signup" color="blue.500">
-                회원가입
+              <Link asChild color="blue.500">
+                <RouterLink to="/signup">회원가입</RouterLink>
               </Link>
             </Text>
           </VStack>

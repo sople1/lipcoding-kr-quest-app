@@ -251,7 +251,7 @@ const RequestsPage: React.FC = () => {
         <Heading size="lg">
           {user?.role === 'mentor' ? '받은 매칭 요청' : '보낸 매칭 요청'}
         </Heading>
-        <Button onClick={loadRequests} isLoading={loading}>
+        <Button onClick={loadRequests} loading={loading}>
           새로고침
         </Button>
       </HStack>
@@ -295,7 +295,7 @@ const RequestsPage: React.FC = () => {
                                   </Text>
                                 </Box>
                               </HStack>
-                              <Badge colorScheme={getStatusColor(request.status)}>
+                              <Badge colorPalette={getStatusColor(request.status)}>
                                 {getStatusText(request.status)}
                               </Badge>
                             </HStack>
@@ -326,22 +326,22 @@ const RequestsPage: React.FC = () => {
                               <HStack>
                                 <Button
                                   size="sm"
-                                  colorScheme="green"
-                                  leftIcon={<CheckIcon />}
+                                  colorPalette="green"
                                   onClick={() => acceptRequest(request.id)}
-                                  isLoading={actionLoading === request.id}
-                                  isDisabled={user?.is_matched}
+                                  loading={actionLoading === request.id}
+                                  disabled={user?.is_matched}
                                 >
+                                  <CheckIcon />
                                   수락
                                 </Button>
                                 <Button
                                   size="sm"
-                                  colorScheme="red"
+                                  colorPalette="red"
                                   variant="outline"
-                                  leftIcon={<CloseIcon />}
                                   onClick={() => rejectRequest(request.id)}
-                                  isLoading={actionLoading === request.id}
+                                  loading={actionLoading === request.id}
                                 >
+                                  <CloseIcon />
                                   거절
                                 </Button>
                               </HStack>
@@ -377,7 +377,7 @@ const RequestsPage: React.FC = () => {
                                   </Text>
                                 </Box>
                               </HStack>
-                              <Badge colorScheme={getStatusColor(request.status)}>
+                              <Badge colorPalette={getStatusColor(request.status)}>
                                 {getStatusText(request.status)}
                               </Badge>
                             </HStack>
@@ -416,7 +416,7 @@ const RequestsPage: React.FC = () => {
                           </Text>
                         </Box>
                       </HStack>
-                      <Badge colorScheme={getStatusColor(request.status)}>
+                      <Badge colorPalette={getStatusColor(request.status)}>
                         {getStatusText(request.status)}
                       </Badge>
                     </HStack>
@@ -438,12 +438,12 @@ const RequestsPage: React.FC = () => {
                       {request.status === 'pending' && (
                         <Button
                           size="sm"
-                          colorScheme="red"
+                          colorPalette="red"
                           variant="outline"
-                          leftIcon={<DeleteIcon />}
                           onClick={() => cancelRequest(request.id)}
-                          isLoading={actionLoading === request.id}
+                          loading={actionLoading === request.id}
                         >
+                          <DeleteIcon />
                           취소
                         </Button>
                       )}
