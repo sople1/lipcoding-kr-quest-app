@@ -3,27 +3,17 @@ import {
   VStack,
   Heading,
   SimpleGrid,
-  Card,
-  CardBody,
-  Avatar,
   Text,
   Badge,
   Button,
   HStack,
-  Tag,
-  Wrap,
-  WrapItem,
-  useToast,
-  Alert,
-  AlertIcon,
   Spinner,
   Center,
   Input,
-  InputGroup,
-  InputLeftElement,
   Box,
+  Flex,
 } from '@chakra-ui/react';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaUser, FaExclamationTriangle } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 
@@ -36,6 +26,13 @@ interface Mentor {
   is_matched?: boolean;
 }
 
+// Simple toast function for Chakra UI v3
+const showToast = (title: string, description: string, status: 'success' | 'error') => {
+  // For now, use console.log. In production, you'd implement proper toast system
+  console.log(`[${status.toUpperCase()}] ${title}: ${description}`);
+  alert(`${title}: ${description}`);
+};
+
 /**
  * Mentors page component (for mentees)
  * @returns {JSX.Element} The mentors page
@@ -47,8 +44,6 @@ const MentorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const [requestingMentorId, setRequestingMentorId] = useState<number | null>(null);
-  
-  const toast = useToast();
 
   /**
    * Load mentors from API
@@ -62,22 +57,20 @@ const MentorsPage: React.FC = () => {
     } catch (error: any) {
       const errorMessage = error.message || '멘토 목록을 불러오는데 실패했습니다.';
       setError(errorMessage);
-      toast({
-        title: '멘토 목록 로드 실패',
-        description: errorMessage,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
+      showToast(
+        '멘토 목록 로드 실패',
+        errorMessage,
+        'error'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * Send match request to mentor
+   * Send match request to a mentor
    */
-  const sendMatchRequest = async (mentorId: number) => {
+  const handleMatchRequest = async (mentorId: number) => {
     try {
       setRequestingMentorId(mentorId);
       
@@ -86,25 +79,21 @@ const MentorsPage: React.FC = () => {
         message: '안녕하세요! 멘토링을 요청드리고 싶습니다.',
       });
 
-      toast({
-        title: '매칭 요청 전송 완료',
-        description: '멘토에게 매칭 요청을 보냈습니다.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast(
+        '매칭 요청 전송 완료',
+        '멘토에게 매칭 요청을 보냈습니다.',
+        'success'
+      );
 
       // Reload mentors to reflect any changes
       await loadMentors();
     } catch (error: any) {
       const errorMessage = error.message || '매칭 요청 전송에 실패했습니다.';
-      toast({
-        title: '매칭 요청 실패',
-        description: errorMessage,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
+      showToast(
+        '매칭 요청 실패',
+        errorMessage,
+        'error'
+      );
     } finally {
       setRequestingMentorId(null);
     }
@@ -130,10 +119,12 @@ const MentorsPage: React.FC = () => {
   if (user?.role !== 'mentee') {
     return (
       <VStack gap={6} align="stretch">
-        <Alert status="warning">
-          <AlertIcon />
-          멘토 목록은 멘티만 볼 수 있습니다.
-        </Alert>
+        <Box bg="orange.50" p={4} borderRadius="md" borderLeft="4px" borderLeftColor="orange.400">
+          <HStack>
+            <FaExclamationTriangle color="orange" />
+            <Text color="orange.700">멘토 목록은 멘티만 볼 수 있습니다.</Text>
+          </HStack>
+        </Box>
       </VStack>
     );
   }
@@ -148,25 +139,25 @@ const MentorsPage: React.FC = () => {
       </HStack>
 
       {/* Search */}
-      <Box>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none">
-            <FaSearch color="gray.300" />
-          </InputLeftElement>
-          <Input
-            placeholder="멘토 이름, 소개, 스킬로 검색..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            
-          />
-        </InputGroup>
+      <Box position="relative">
+        <Input
+          placeholder="멘토 이름, 소개, 스킬로 검색..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          paddingLeft="40px"
+        />
+        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)">
+          <FaSearch color="gray" />
+        </Box>
       </Box>
 
       {error && (
-        <Alert status="error">
-          <AlertIcon />
-          {error}
-        </Alert>
+        <Box bg="red.50" p={4} borderRadius="md" borderLeft="4px" borderLeftColor="red.400">
+          <HStack>
+            <FaExclamationTriangle color="red" />
+            <Text color="red.700">{error}</Text>
+          </HStack>
+        </Box>
       )}
 
       {loading ? (
@@ -189,68 +180,81 @@ const MentorsPage: React.FC = () => {
               
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
                 {filteredMentors.map((mentor) => (
-                  <Card key={mentor.id} shadow="md">
-                    <CardBody>
-                      <VStack align="start" gap={4}>
-                        <HStack>
-                          <Avatar name={mentor.name} />
-                          <Box>
-                            <Text fontWeight="bold">{mentor.name}</Text>
-                            <Text fontSize="sm" color="gray.600">
-                              {mentor.email}
-                            </Text>
-                          </Box>
-                        </HStack>
-
-                        {mentor.bio && (
-                          <Text fontSize="sm" noOfLines={3}>
-                            {mentor.bio}
+                  <Box key={mentor.id} border="1px" borderColor="gray.200" borderRadius="md" p={6} bg="white" shadow="sm">
+                    <VStack align="start" gap={4}>
+                      <HStack>
+                        <Box
+                          width="40px"
+                          height="40px"
+                          borderRadius="full"
+                          bg="blue.100"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                        >
+                          <FaUser color="blue" />
+                        </Box>
+                        <Box>
+                          <Text fontWeight="bold">{mentor.name}</Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {mentor.email}
                           </Text>
-                        )}
+                        </Box>
+                      </HStack>
 
-                        {mentor.skills && mentor.skills.length > 0 && (
-                          <Box>
-                            <Text fontSize="sm" fontWeight="bold" mb={2}>
-                              제공 가능한 스킬:
-                            </Text>
-                            <Wrap>
-                              {mentor.skills.map((skill) => (
-                                <WrapItem key={skill}>
-                                  <Tag size="sm" colorPalette="blue">
-                                    {skill}
-                                  </Tag>
-                                </WrapItem>
-                              ))}
-                            </Wrap>
-                          </Box>
-                        )}
+                      {mentor.bio && (
+                        <Text fontSize="sm" color="gray.700">
+                          {mentor.bio.length > 100 ? `${mentor.bio.substring(0, 100)}...` : mentor.bio}
+                        </Text>
+                      )}
 
-                        <HStack w="100%" justify="space-between">
-                          <Badge
-                            colorPalette={mentor.is_matched ? 'red' : 'green'}
-                            size="sm"
-                          >
-                            {mentor.is_matched ? '매칭됨' : '매칭 가능'}
-                          </Badge>
+                      {mentor.skills && mentor.skills.length > 0 && (
+                        <Box>
+                          <Text fontSize="sm" fontWeight="bold" mb={2}>
+                            제공 가능한 스킬:
+                          </Text>
+                          <Flex flexWrap="wrap" gap={2}>
+                            {mentor.skills.map((skill) => (
+                              <Badge
+                                key={skill}
+                                colorPalette="blue"
+                                size="sm"
+                                borderRadius="full"
+                                px={2}
+                                py={1}
+                              >
+                                {skill}
+                              </Badge>
+                            ))}
+                          </Flex>
+                        </Box>
+                      )}
 
-                          <Button
-                            size="sm"
-                            colorPalette="blue"
-                            onClick={() => sendMatchRequest(mentor.id)}
-                            disabled={mentor.is_matched || user?.is_matched}
-                            loading={requestingMentorId === mentor.id}
-                          >
-                            {mentor.is_matched 
-                              ? '매칭됨' 
-                              : user?.is_matched 
-                                ? '이미 매칭됨'
-                                : '매칭 요청'
-                            }
-                          </Button>
-                        </HStack>
-                      </VStack>
-                    </CardBody>
-                  </Card>
+                      <HStack w="100%" justify="space-between">
+                        <Badge
+                          colorPalette={mentor.is_matched ? 'red' : 'green'}
+                          size="sm"
+                        >
+                          {mentor.is_matched ? '매칭됨' : '매칭 가능'}
+                        </Badge>
+
+                        <Button
+                          size="sm"
+                          colorPalette="blue"
+                          onClick={() => handleMatchRequest(mentor.id)}
+                          disabled={mentor.is_matched || user?.is_matched}
+                          loading={requestingMentorId === mentor.id}
+                        >
+                          {mentor.is_matched 
+                            ? '매칭됨' 
+                            : user?.is_matched 
+                              ? '이미 매칭됨'
+                              : '매칭 요청'
+                          }
+                        </Button>
+                      </HStack>
+                    </VStack>
+                  </Box>
                 ))}
               </SimpleGrid>
             </>

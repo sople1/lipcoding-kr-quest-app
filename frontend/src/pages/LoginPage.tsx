@@ -8,10 +8,17 @@ import {
   Text,
   Link,
   Container,
+  HStack,
 } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaExclamationTriangle } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
+
+// Simple toast function for Chakra UI v3
+const showToast = (title: string, description: string, status: 'success' | 'error') => {
+  console.log(`[${status.toUpperCase()}] ${title}: ${description}`);
+  alert(`${title}: ${description}`);
+};
 
 /**
  * Login page component
@@ -26,7 +33,6 @@ const LoginPage: React.FC = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-  const toast = useToast();
 
   /**
    * Handle form submission
@@ -38,24 +44,20 @@ const LoginPage: React.FC = () => {
 
     try {
       await login({ email, password });
-      toast({
-        title: '로그인 성공',
-        description: '환영합니다!',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast(
+        '로그인 성공',
+        '환영합니다!',
+        'success'
+      );
       navigate('/profile');
     } catch (error: any) {
       const errorMessage = error.message || '로그인에 실패했습니다.';
       setError(errorMessage);
-      toast({
-        title: '로그인 실패',
-        description: errorMessage,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
+      showToast(
+        '로그인 실패',
+        errorMessage,
+        'error'
+      );
     } finally {
       setLoading(false);
     }
@@ -63,78 +65,83 @@ const LoginPage: React.FC = () => {
 
   return (
     <Container maxW="md" py={20}>
-      <Card>
-        <CardBody>
-          <VStack gap={6}>
-            <Heading size="lg" color="blue.500">
-              멘토링 매칭
-            </Heading>
-            <Text color="gray.600">
-              계정에 로그인하세요
-            </Text>
+      <Box bg="white" p={8} borderRadius="lg" shadow="md" border="1px" borderColor="gray.200">
+        <VStack gap={6}>
+          <Heading size="lg" color="blue.500">
+            멘토링 매칭
+          </Heading>
+          <Text color="gray.600">
+            계정에 로그인하세요
+          </Text>
 
-            {error && (
-              <Alert status="error">
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
-
-            <Box as="form" onSubmit={handleSubmit} w="100%">
-              <VStack gap={4}>
-                <FormControl isRequired>
-                  <FormLabel>이메일</FormLabel>
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="이메일을 입력하세요"
-                    
-                  />
-                </FormControl>
-
-                <FormControl isRequired>
-                  <FormLabel>비밀번호</FormLabel>
-                  <InputGroup>
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="비밀번호를 입력하세요"
-                    />
-                    <InputRightElement>
-                      <IconButton
-                        aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                      </IconButton>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-
-                <Button
-                  type="submit"
-                  colorPalette="blue"
-                  w="100%"
-                  loading={loading}
-                >
-                  로그인
-                </Button>
-              </VStack>
+          {error && (
+            <Box bg="red.50" p={4} borderRadius="md" borderLeft="4px" borderLeftColor="red.400" w="100%">
+              <HStack>
+                <FaExclamationTriangle color="red" />
+                <Text color="red.700">{error}</Text>
+              </HStack>
             </Box>
+          )}
 
-            <Text color="gray.600">
-              계정이 없으신가요?{' '}
-              <Link asChild color="blue.500">
-                <RouterLink to="/signup">회원가입</RouterLink>
-              </Link>
-            </Text>
-          </VStack>
-        </CardBody>
-      </Card>
+          <Box as="form" onSubmit={handleSubmit} w="100%">
+            <VStack gap={4}>
+              <Box w="100%">
+                <Text mb={2} fontWeight="medium">이메일</Text>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="이메일을 입력하세요"
+                  required
+                />
+              </Box>
+
+              <Box w="100%">
+                <Text mb={2} fontWeight="medium">비밀번호</Text>
+                <Box position="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="비밀번호를 입력하세요"
+                    required
+                    paddingRight="48px"
+                  />
+                  <Button
+                    position="absolute"
+                    right="8px"
+                    top="50%"
+                    transform="translateY(-50%)"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </Button>
+                </Box>
+              </Box>
+
+              <Button
+                type="submit"
+                colorPalette="blue"
+                w="100%"
+                loading={loading}
+                mt={4}
+              >
+                로그인
+              </Button>
+            </VStack>
+          </Box>
+
+          <Text color="gray.600">
+            계정이 없으신가요?{' '}
+            <Link asChild color="blue.500">
+              <RouterLink to="/signup">회원가입</RouterLink>
+            </Link>
+          </Text>
+        </VStack>
+      </Box>
     </Container>
   );
 };

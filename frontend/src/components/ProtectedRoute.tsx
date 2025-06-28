@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (loading) {
     return (
       <Center height="100vh">
-        <Spinner size="xl" colorPalette="blue" />
+        <Spinner size="xl" color="blue.500" />
       </Center>
     );
   }

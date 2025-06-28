@@ -2,36 +2,25 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
   Input,
   VStack,
   Heading,
   Text,
-  useToast,
-  Card,
-  CardBody,
-  CardHeader,
-  Avatar,
   HStack,
   Badge,
   Textarea,
-  Tag,
-  TagLabel,
-  TagCloseButton,
-  Wrap,
-  WrapItem,
-  InputGroup,
-  InputRightElement,
-  IconButton,
-  Divider,
   Stack,
-  Alert,
-  AlertIcon,
+  Flex,
 } from '@chakra-ui/react';
-import { FaEdit, FaPlus, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaCheck, FaTimes, FaUser } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
+
+// Simple toast function for Chakra UI v3
+const showToast = (title: string, description: string, status: 'success' | 'error') => {
+  console.log(`[${status.toUpperCase()}] ${title}: ${description}`);
+  alert(`${title}: ${description}`);
+};
 
 /**
  * Profile page component
@@ -49,57 +38,29 @@ const ProfilePage: React.FC = () => {
   });
   const [skills, setSkills] = useState<string[]>(user?.skills || []);
   const [skillInput, setSkillInput] = useState('');
-  
-  const toast = useToast();
 
   /**
-   * Handle input changes
+   * Handle input change
    */
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   /**
-   * Add skill to the list
+   * Add a skill
    */
   const addSkill = () => {
     if (skillInput.trim() && !skills.includes(skillInput.trim())) {
-      setSkills(prev => [...prev, skillInput.trim()]);
+      setSkills([...skills, skillInput.trim()]);
       setSkillInput('');
     }
   };
 
   /**
-   * Remove skill from the list
+   * Remove a skill
    */
   const removeSkill = (skillToRemove: string) => {
-    setSkills(prev => prev.filter(skill => skill !== skillToRemove));
-  };
-
-  /**
-   * Start editing profile
-   */
-  const startEditing = () => {
-    setFormData({
-      name: user?.name || '',
-      bio: user?.bio || '',
-    });
-    setSkills(user?.skills || []);
-    setIsEditing(true);
-    setError('');
-  };
-
-  /**
-   * Cancel editing
-   */
-  const cancelEditing = () => {
-    setIsEditing(false);
-    setError('');
-    setFormData({
-      name: user?.name || '',
-      bio: user?.bio || '',
-    });
-    setSkills(user?.skills || []);
+    setSkills(skills.filter(skill => skill !== skillToRemove));
   };
 
   /**
@@ -110,212 +71,214 @@ const ProfilePage: React.FC = () => {
     setError('');
 
     try {
-      await api.put('/profile', {
+      await api.put('/api/user/profile', {
         name: formData.name,
         bio: formData.bio,
-        skills: skills,
+        skills
       });
 
       await refreshUser();
       setIsEditing(false);
-      
-      toast({
-        title: '프로필 업데이트 성공',
-        description: '프로필이 성공적으로 업데이트되었습니다.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast('프로필 업데이트', '프로필이 성공적으로 업데이트되었습니다.', 'success');
     } catch (error: any) {
       const errorMessage = error.message || '프로필 업데이트에 실패했습니다.';
       setError(errorMessage);
-      toast({
-        title: '프로필 업데이트 실패',
-        description: errorMessage,
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
+      showToast('업데이트 실패', errorMessage, 'error');
     } finally {
       setLoading(false);
     }
   };
 
+  /**
+   * Cancel editing
+   */
+  const cancelEditing = () => {
+    setFormData({
+      name: user?.name || '',
+      bio: user?.bio || '',
+    });
+    setSkills(user?.skills || []);
+    setIsEditing(false);
+    setError('');
+  };
+
   if (!user) {
     return (
       <Box textAlign="center" py={10}>
-        <Text>사용자 정보를 불러오는 중...</Text>
+        <Text>사용자 정보를 불러올 수 없습니다.</Text>
       </Box>
     );
   }
 
   return (
-    <VStack gap={6} align="stretch">
-      <Heading size="lg">프로필</Heading>
-
-      <Card>
-        <CardHeader>
-          <HStack justify="space-between">
+    <VStack gap={6} maxW="2xl" mx="auto">
+      <Box bg="white" p={8} borderRadius="lg" boxShadow="md" borderWidth="1px" borderColor="gray.200" w="100%">
+        <VStack gap={6}>
+          {/* Header */}
+          <Flex justify="space-between" align="center" w="100%">
             <HStack gap={4}>
-              <Avatar size="lg" name={user.name} />
+              <Box
+                width="64px"
+                height="64px"
+                borderRadius="full"
+                bg="blue.100"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <FaUser size="24" color="blue" />
+              </Box>
               <Box>
                 <Heading size="md">{user.name}</Heading>
                 <Text color="gray.600">{user.email}</Text>
-                <Badge
-                  colorScheme={user.role === 'mentor' ? 'blue' : 'green'}
-                  size="sm"
-                >
-                  {user.role === 'mentor' ? '멘토' : '멘티'}
+                <Badge colorScheme={user.is_matched ? 'green' : 'gray'}>
+                  {user.is_matched ? '매칭됨' : '매칭 대기중'}
                 </Badge>
               </Box>
             </HStack>
-            
+
             {!isEditing ? (
               <Button
-                leftIcon={<FaEdit />}
-                onClick={startEditing}
+                onClick={() => setIsEditing(true)}
                 colorScheme="blue"
                 variant="outline"
+                display="flex"
+                alignItems="center"
+                gap={2}
               >
+                <FaEdit />
                 편집
               </Button>
             ) : (
               <HStack>
                 <Button
-                  leftIcon={<FaCheck />}
                   onClick={saveProfile}
                   colorScheme="blue"
-                  isLoading={loading}
+                  loading={loading}
                   loadingText="저장 중..."
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
                 >
+                  <FaCheck />
                   저장
                 </Button>
                 <Button
-                  leftIcon={<FaTimes />}
                   onClick={cancelEditing}
                   variant="outline"
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
                 >
+                  <FaTimes />
                   취소
                 </Button>
               </HStack>
             )}
-          </HStack>
-        </CardHeader>
+          </Flex>
 
-        <CardBody>
           {error && (
-            <Alert status="error" mb={4}>
-              <AlertIcon />
-              {error}
-            </Alert>
+            <Box bg="red.50" p={4} borderRadius="md" borderLeftWidth="4px" borderLeftColor="red.400" w="100%">
+              <Text color="red.700">{error}</Text>
+            </Box>
           )}
 
-          <Stack gap={4}>
-            {/* 매칭 상태 */}
-            <Box>
-              <Text fontWeight="bold" mb={2}>매칭 상태</Text>
-              <Badge
-                colorScheme={user.is_matched ? 'green' : 'gray'}
-                size="lg"
-                p={2}
-              >
-                {user.is_matched ? '매칭됨' : '매칭 대기중'}
-              </Badge>
-            </Box>
+          <Box w="100%" borderTopWidth="1px" borderColor="gray.200" pt={6}>
+            <Stack gap={4}>
+              {/* 이름 */}
+              <Box>
+                <Text mb={2} fontWeight="medium">이름</Text>
+                {isEditing ? (
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    placeholder="이름을 입력하세요"
+                  />
+                ) : (
+                  <Text>{user.name}</Text>
+                )}
+              </Box>
 
-            <Divider />
+              {/* 자기소개 */}
+              <Box>
+                <Text mb={2} fontWeight="medium">자기소개</Text>
+                {isEditing ? (
+                  <Textarea
+                    value={formData.bio}
+                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                    placeholder="자신을 소개해주세요"
+                    rows={4}
+                  />
+                ) : (
+                  <Text>{user.bio || '자기소개가 없습니다.'}</Text>
+                )}
+              </Box>
 
-            {/* 이름 */}
-            <FormControl>
-              <FormLabel>이름</FormLabel>
-              {isEditing ? (
-                <Input
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  
-                />
-              ) : (
-                <Text>{user.name}</Text>
-              )}
-            </FormControl>
-
-            {/* 자기소개 */}
-            <FormControl>
-              <FormLabel>자기소개</FormLabel>
-              {isEditing ? (
-                <Textarea
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder="자신을 소개해주세요"
-                  
-                  rows={4}
-                />
-              ) : (
-                <Text whiteSpace="pre-wrap">{user.bio || '자기소개가 없습니다.'}</Text>
-              )}
-            </FormControl>
-
-            {/* 스킬 */}
-            <FormControl>
-              <FormLabel>
-                스킬 {user.role === 'mentor' ? '(제공 가능한 스킬)' : '(관심 있는 스킬)'}
-              </FormLabel>
-              
-              {isEditing ? (
-                <>
-                  <HStack mb={2}>
-                    <Input
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      placeholder="스킬을 입력하세요"
+              {/* 스킬 (멘토인 경우만) */}
+              {user.role === 'mentor' && (
+                <Box>
+                  <Text mb={2} fontWeight="medium">제공 가능한 스킬</Text>
+                  {isEditing ? (
+                    <VStack gap={2} align="start">
+                      <HStack w="100%">
+                        <Input
+                          value={skillInput}
+                          onChange={(e) => setSkillInput(e.target.value)}
+                          placeholder="스킬을 입력하세요"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                        />
+                        <Button
+                          onClick={addSkill}
+                          colorScheme="blue"
+                          display="flex"
+                          alignItems="center"
+                          gap={2}
+                        >
+                          <FaPlus />
+                        </Button>
+                      </HStack>
                       
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addSkill();
-                        }
-                      }}
-                    />
-                    <IconButton
-                      aria-label="스킬 추가"
-                      icon={<FaPlus />}
-                      onClick={addSkill}
-                      colorScheme="blue"
-                      variant="outline"
-                    />
-                  </HStack>
-                  {skills.length > 0 && (
-                    <Wrap>
-                      {skills.map((skill) => (
-                        <WrapItem key={skill}>
-                          <Tag size="md" variant="solid" colorScheme="blue">
-                            <TagLabel>{skill}</TagLabel>
-                            <TagCloseButton onClick={() => removeSkill(skill)} />
-                          </Tag>
-                        </WrapItem>
-                      ))}
-                    </Wrap>
-                  )}
-                </>
-              ) : (
-                <Wrap>
-                  {user.skills && user.skills.length > 0 ? (
-                    user.skills.map((skill) => (
-                      <WrapItem key={skill}>
-                        <Tag size="md" colorScheme="blue">
-                          {skill}
-                        </Tag>
-                      </WrapItem>
-                    ))
+                      {skills.length > 0 && (
+                        <Flex flexWrap="wrap" gap={2}>
+                          {skills.map((skill) => (
+                            <Badge
+                              key={skill}
+                              colorScheme="blue"
+                              px={2}
+                              py={1}
+                              borderRadius="full"
+                              cursor="pointer"
+                              onClick={() => removeSkill(skill)}
+                              display="flex"
+                              alignItems="center"
+                              gap={1}
+                            >
+                              {skill}
+                              <FaTimes size="10" />
+                            </Badge>
+                          ))}
+                        </Flex>
+                      )}
+                    </VStack>
                   ) : (
-                    <Text color="gray.500">등록된 스킬이 없습니다.</Text>
+                    <Flex flexWrap="wrap" gap={2}>
+                      {user.skills && user.skills.length > 0 ? (
+                        user.skills.map((skill) => (
+                          <Badge key={skill} colorScheme="blue">
+                            {skill}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Text color="gray.500">스킬이 등록되지 않았습니다.</Text>
+                      )}
+                    </Flex>
                   )}
-                </Wrap>
+                </Box>
               )}
-            </FormControl>
-          </Stack>
-        </CardBody>
-      </Card>
+            </Stack>
+          </Box>
+        </VStack>
+      </Box>
     </VStack>
   );
 };

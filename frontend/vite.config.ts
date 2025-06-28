@@ -9,7 +9,7 @@ export default defineConfig({
     host: true
   },
   build: {
-    target: 'ES2025',
+    target: 'ES2022',
     outDir: 'dist'
   }
 })

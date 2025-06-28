@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -19,7 +19,7 @@ import ProtectedRoute from './components/ProtectedRoute';
  */
 function App(): JSX.Element {
   return (
-    <ChakraProvider>
+    <ChakraProvider value={defaultSystem}>
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
