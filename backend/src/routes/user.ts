@@ -2,9 +2,9 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { userModel } from '../models/user.model.js';
 import { AuthService } from '../middleware/auth.js';
-import type { UpdateUserRequest, DbUser } from '../types/index.js';
+import type { UpdateUserRequest } from '../types/index.js';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 const authService = new AuthService();
 
 /**
