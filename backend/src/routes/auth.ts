@@ -4,9 +4,9 @@ import { body, validationResult } from 'express-validator';
 import { userModel } from '../models/user.model.js';
 import { AuthService } from '../middleware/auth.js';
 import { securityRateLimit } from '../middleware/security.js';
-import type { User, CreateUserRequest, LoginRequest, DbUser } from '../types/index.js';
+import type { CreateUserRequest, LoginRequest, DbUser } from '../types/index.js';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 const authService = new AuthService();
 
 /**
