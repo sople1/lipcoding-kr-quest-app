@@ -32,13 +32,13 @@ root/
 - **프레임워크**: React
 - **UI 라이브러리**: Chakra UI v3
 - **빌드 도구**: Vite + Rollup
-- **JavaScript 버전**: ES2025 이상
+- **JavaScript 버전**: ES2024 이상
 
 ### Backend
 - **언어**: TypeScript
 - **런타임**: Node.js
 - **데이터베이스**: SQLite
-- **JavaScript 버전**: ES2025 이상
+- **JavaScript 버전**: ES2024 이상
 
 ## 4. 패키지 관리
 
