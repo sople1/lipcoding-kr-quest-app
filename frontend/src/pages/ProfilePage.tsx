@@ -29,7 +29,7 @@ import {
   Alert,
   AlertIcon,
 } from '@chakra-ui/react';
-import { EditIcon, AddIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { FaEdit, FaPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 
@@ -150,13 +150,13 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <VStack spacing={6} align="stretch">
+    <VStack gap={6} align="stretch">
       <Heading size="lg">프로필</Heading>
 
       <Card>
         <CardHeader>
           <HStack justify="space-between">
-            <HStack spacing={4}>
+            <HStack gap={4}>
               <Avatar size="lg" name={user.name} />
               <Box>
                 <Heading size="md">{user.name}</Heading>
@@ -172,7 +172,7 @@ const ProfilePage: React.FC = () => {
             
             {!isEditing ? (
               <Button
-                leftIcon={<EditIcon />}
+                leftIcon={<FaEdit />}
                 onClick={startEditing}
                 colorScheme="blue"
                 variant="outline"
@@ -182,7 +182,7 @@ const ProfilePage: React.FC = () => {
             ) : (
               <HStack>
                 <Button
-                  leftIcon={<CheckIcon />}
+                  leftIcon={<FaCheck />}
                   onClick={saveProfile}
                   colorScheme="blue"
                   isLoading={loading}
@@ -191,7 +191,7 @@ const ProfilePage: React.FC = () => {
                   저장
                 </Button>
                 <Button
-                  leftIcon={<CloseIcon />}
+                  leftIcon={<FaTimes />}
                   onClick={cancelEditing}
                   variant="outline"
                 >
@@ -210,7 +210,7 @@ const ProfilePage: React.FC = () => {
             </Alert>
           )}
 
-          <Stack spacing={4}>
+          <Stack gap={4}>
             {/* 매칭 상태 */}
             <Box>
               <Text fontWeight="bold" mb={2}>매칭 상태</Text>
@@ -232,7 +232,7 @@ const ProfilePage: React.FC = () => {
                 <Input
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  focusBorderColor="blue.500"
+                  
                 />
               ) : (
                 <Text>{user.name}</Text>
@@ -247,7 +247,7 @@ const ProfilePage: React.FC = () => {
                   value={formData.bio}
                   onChange={(e) => handleInputChange('bio', e.target.value)}
                   placeholder="자신을 소개해주세요"
-                  focusBorderColor="blue.500"
+                  
                   rows={4}
                 />
               ) : (
@@ -268,7 +268,7 @@ const ProfilePage: React.FC = () => {
                       value={skillInput}
                       onChange={(e) => setSkillInput(e.target.value)}
                       placeholder="스킬을 입력하세요"
-                      focusBorderColor="blue.500"
+                      
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -278,7 +278,7 @@ const ProfilePage: React.FC = () => {
                     />
                     <IconButton
                       aria-label="스킬 추가"
-                      icon={<AddIcon />}
+                      icon={<FaPlus />}
                       onClick={addSkill}
                       colorScheme="blue"
                       variant="outline"

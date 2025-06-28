@@ -24,7 +24,7 @@ import {
   Tab,
   TabPanel,
 } from '@chakra-ui/react';
-import { CheckIcon, CloseIcon, DeleteIcon } from '@chakra-ui/icons';
+import { FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 
@@ -246,7 +246,7 @@ const RequestsPage: React.FC = () => {
   }
 
   return (
-    <VStack spacing={6} align="stretch">
+    <VStack gap={6} align="stretch">
       <HStack justify="space-between">
         <Heading size="lg">
           {user?.role === 'mentor' ? '받은 매칭 요청' : '보낸 매칭 요청'}
@@ -273,7 +273,7 @@ const RequestsPage: React.FC = () => {
 
           <TabPanels>
             <TabPanel px={0}>
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 {incomingRequests.filter(r => r.status === 'pending').length === 0 ? (
                   <Center py={10}>
                     <Text color="gray.500">대기중인 매칭 요청이 없습니다.</Text>
@@ -284,7 +284,7 @@ const RequestsPage: React.FC = () => {
                     .map((request) => (
                       <Card key={request.id} shadow="md">
                         <CardBody>
-                          <Stack spacing={4}>
+                          <Stack gap={4}>
                             <HStack justify="space-between">
                               <HStack>
                                 <Avatar name={request.mentee?.name} />
@@ -331,7 +331,7 @@ const RequestsPage: React.FC = () => {
                                   loading={actionLoading === request.id}
                                   disabled={user?.is_matched}
                                 >
-                                  <CheckIcon />
+                                  <FaCheck />
                                   수락
                                 </Button>
                                 <Button
@@ -341,7 +341,7 @@ const RequestsPage: React.FC = () => {
                                   onClick={() => rejectRequest(request.id)}
                                   loading={actionLoading === request.id}
                                 >
-                                  <CloseIcon />
+                                  <FaTimes />
                                   거절
                                 </Button>
                               </HStack>
@@ -355,7 +355,7 @@ const RequestsPage: React.FC = () => {
             </TabPanel>
 
             <TabPanel px={0}>
-              <VStack spacing={4} align="stretch">
+              <VStack gap={4} align="stretch">
                 {incomingRequests.filter(r => r.status !== 'pending').length === 0 ? (
                   <Center py={10}>
                     <Text color="gray.500">처리된 요청이 없습니다.</Text>
@@ -366,7 +366,7 @@ const RequestsPage: React.FC = () => {
                     .map((request) => (
                       <Card key={request.id} shadow="sm">
                         <CardBody>
-                          <Stack spacing={4}>
+                          <Stack gap={4}>
                             <HStack justify="space-between">
                               <HStack>
                                 <Avatar name={request.mentee?.name} />
@@ -396,7 +396,7 @@ const RequestsPage: React.FC = () => {
         </Tabs>
       ) : (
         // Mentee view - outgoing requests
-        <VStack spacing={4} align="stretch">
+        <VStack gap={4} align="stretch">
           {outgoingRequests.length === 0 ? (
             <Center py={10}>
               <Text color="gray.500">보낸 매칭 요청이 없습니다.</Text>
@@ -405,7 +405,7 @@ const RequestsPage: React.FC = () => {
             outgoingRequests.map((request) => (
               <Card key={request.id} shadow="md">
                 <CardBody>
-                  <Stack spacing={4}>
+                  <Stack gap={4}>
                     <HStack justify="space-between">
                       <HStack>
                         <Avatar name={request.mentor?.name} />
@@ -443,7 +443,7 @@ const RequestsPage: React.FC = () => {
                           onClick={() => cancelRequest(request.id)}
                           loading={actionLoading === request.id}
                         >
-                          <DeleteIcon />
+                          <FaTrash />
                           취소
                         </Button>
                       )}

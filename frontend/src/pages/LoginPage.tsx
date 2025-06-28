@@ -2,25 +2,15 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
   Input,
   VStack,
   Heading,
   Text,
   Link,
-  useToast,
   Container,
-  Card,
-  CardBody,
-  Alert,
-  AlertIcon,
-  InputGroup,
-  InputRightElement,
-  IconButton,
 } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 
 /**
@@ -75,7 +65,7 @@ const LoginPage: React.FC = () => {
     <Container maxW="md" py={20}>
       <Card>
         <CardBody>
-          <VStack spacing={6}>
+          <VStack gap={6}>
             <Heading size="lg" color="blue.500">
               멘토링 매칭
             </Heading>
@@ -91,7 +81,7 @@ const LoginPage: React.FC = () => {
             )}
 
             <Box as="form" onSubmit={handleSubmit} w="100%">
-              <VStack spacing={4}>
+              <VStack gap={4}>
                 <FormControl isRequired>
                   <FormLabel>이메일</FormLabel>
                   <Input
@@ -99,7 +89,7 @@ const LoginPage: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="이메일을 입력하세요"
-                    focusBorderColor="blue.500"
+                    
                   />
                 </FormControl>
 

@@ -67,7 +67,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             멘토링 매칭
           </Heading>
 
-          <HStack spacing={4}>
+          <HStack gap={4}>
             {/* Navigation Links */}
             {user?.role === 'mentee' && (
               <Button as={Link} to="/mentors" variant="ghost">

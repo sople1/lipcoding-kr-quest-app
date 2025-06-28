@@ -23,7 +23,7 @@ import {
   InputLeftElement,
   Box,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { FaSearch } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 
@@ -129,7 +129,7 @@ const MentorsPage: React.FC = () => {
   // Check if user is mentee
   if (user?.role !== 'mentee') {
     return (
-      <VStack spacing={6} align="stretch">
+      <VStack gap={6} align="stretch">
         <Alert status="warning">
           <AlertIcon />
           멘토 목록은 멘티만 볼 수 있습니다.
@@ -139,7 +139,7 @@ const MentorsPage: React.FC = () => {
   }
 
   return (
-    <VStack spacing={6} align="stretch">
+    <VStack gap={6} align="stretch">
       <HStack justify="space-between">
         <Heading size="lg">멘토 찾기</Heading>
         <Button onClick={loadMentors} loading={loading}>
@@ -151,13 +151,13 @@ const MentorsPage: React.FC = () => {
       <Box>
         <InputGroup>
           <InputLeftElement pointerEvents="none">
-            <SearchIcon color="gray.300" />
+            <FaSearch color="gray.300" />
           </InputLeftElement>
           <Input
             placeholder="멘토 이름, 소개, 스킬로 검색..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            focusBorderColor="blue.500"
+            
           />
         </InputGroup>
       </Box>
@@ -187,11 +187,11 @@ const MentorsPage: React.FC = () => {
                 총 {filteredMentors.length}명의 멘토가 있습니다
               </Text>
               
-              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
                 {filteredMentors.map((mentor) => (
                   <Card key={mentor.id} shadow="md">
                     <CardBody>
-                      <VStack align="start" spacing={4}>
+                      <VStack align="start" gap={4}>
                         <HStack>
                           <Avatar name={mentor.name} />
                           <Box>
