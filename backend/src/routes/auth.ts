@@ -1,13 +1,12 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
-import { UserModel } from '../models/database.js';
+import { userModel } from '../models/user.model.js';
 import { AuthService } from '../middleware/auth.js';
 import { securityRateLimit } from '../middleware/security.js';
 import type { User, CreateUserRequest, LoginRequest, DbUser } from '../types/index.js';
 
 const router = express.Router();
-const userModel = new UserModel();
 const authService = new AuthService();
 
 /**

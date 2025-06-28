@@ -1,10 +1,9 @@
 import express from 'express';
 import { query, validationResult } from 'express-validator';
-import { UserModel } from '../models/database.js';
+import { userModel } from '../models/user.model.js';
 import { AuthService } from '../middleware/auth.js';
 
 const router = express.Router();
-const userModel = new UserModel();
 const authService = new AuthService();
 
 /**

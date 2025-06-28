@@ -1,12 +1,11 @@
 import express from 'express';
 import { body, query, validationResult } from 'express-validator';
-import { MatchRequestModel, UserModel } from '../models/database.js';
+import { matchRequestModel } from '../models/match-request.model.js';
+import { userModel } from '../models/user.model.js';
 import { AuthService } from '../middleware/auth.js';
 import type { CreateMatchRequestRequest, UpdateMatchRequestRequest } from '../types/index.js';
 
 const router = express.Router();
-const matchRequestModel = new MatchRequestModel();
-const userModel = new UserModel();
 const authService = new AuthService();
 
 /**
