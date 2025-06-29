@@ -44,6 +44,7 @@ const MentorsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
   const [requestingMentorId, setRequestingMentorId] = useState<number | null>(null);
+  const [showMatched, setShowMatched] = useState(false);
 
   /**
    * Load mentors from API
@@ -52,7 +53,11 @@ const MentorsPage: React.FC = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await api.get('/mentors');
+      const params = new URLSearchParams();
+      if (showMatched) {
+        params.append('includeMatched', 'true');
+      }
+      const response = await api.get(`/mentors?${params.toString()}`);
       console.log('멘토 목록 응답:', response);
       setMentors(response.mentors || []);
     } catch (error: any) {
@@ -114,7 +119,7 @@ const MentorsPage: React.FC = () => {
 
   useEffect(() => {
     loadMentors();
-  }, []);
+  }, [showMatched]);
 
   // Check if user is mentee
   if (user?.role !== 'mentee') {
@@ -139,18 +144,30 @@ const MentorsPage: React.FC = () => {
         </Button>
       </HStack>
 
-      {/* Search */}
-      <Box position="relative">
-        <Input
-          placeholder="멘토 이름, 소개, 스킬로 검색..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          paddingLeft="40px"
-        />
-        <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)">
-          <FaSearch color="gray" />
+      {/* Search and Filter Controls */}
+      <VStack gap={4} align="stretch">
+        <Box position="relative">
+          <Input
+            placeholder="멘토 이름, 소개, 스킬로 검색..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            paddingLeft="40px"
+          />
+          <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)">
+            <FaSearch color="gray" />
+          </Box>
         </Box>
-      </Box>
+
+        <HStack>
+          <input
+            type="checkbox"
+            id="showMatched"
+            checked={showMatched}
+            onChange={(e) => setShowMatched(e.target.checked)}
+          />
+          <label htmlFor="showMatched">매칭된 멘토도 표시</label>
+        </HStack>
+      </VStack>
 
       {error && (
         <Box bg="red.50" p={4} borderRadius="md" borderLeft="4px" borderLeftColor="red.400">

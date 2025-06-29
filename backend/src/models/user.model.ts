@@ -84,11 +84,16 @@ export class UserModel {
   /**
    * Find mentors with filtering
    */
-  async findMentors(page: number = 1, limit: number = 10, skills?: string[]): Promise<DbUser[]> {
+  async findMentors(page: number = 1, limit: number = 10, skills?: string[], includeMatched: boolean = false): Promise<DbUser[]> {
     return new Promise((resolve, reject) => {
       const offset = (page - 1) * limit;
-      let query = 'SELECT * FROM users WHERE role = "mentor" AND is_matched = 0';
+      let query = 'SELECT * FROM users WHERE role = "mentor"';
       const params: any[] = [];
+
+      // 매칭된 멘토를 포함하지 않는 경우 (기본값)
+      if (!includeMatched) {
+        query += ' AND is_matched = 0';
+      }
 
       if (skills && skills.length > 0) {
         const skillConditions = skills.map(() => 'skills LIKE ?').join(' OR ');

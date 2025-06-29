@@ -16,6 +16,7 @@ router.get('/mentors',
     query('page').optional().isInt({ min: 1 }),
     query('limit').optional().isInt({ min: 1, max: 100 }),
     query('skills').optional().isString(),
+    query('includeMatched').optional().isBoolean(),
   ],
   async (req: express.Request, res: express.Response) => {
     try {
@@ -34,6 +35,7 @@ router.get('/mentors',
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skillsFilter = req.query.skills as string;
+      const includeMatched = req.query.includeMatched === 'true';
 
       // 스킬 필터 파싱
       let skills: string[] = [];
@@ -41,8 +43,8 @@ router.get('/mentors',
         skills = skillsFilter.split(',').map(skill => skill.trim());
       }
 
-      // 멘토 목록 조회 (매칭되지 않은 멘토만)
-      const mentors = await userModel.findMentors(page, limit, skills);
+      // 멘토 목록 조회 (매칭 여부에 따라)
+      const mentors = await userModel.findMentors(page, limit, skills, includeMatched);
 
       // 비밀번호 제외하고 반환
       const mentorsWithoutPassword = mentors.map(mentor => {
