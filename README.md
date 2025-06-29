@@ -5,6 +5,8 @@
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
+![앱 스크린샷](./screenshot.png)
+
 멘토와 멘티를 1:1로 매칭해주는 웹 애플리케이션입니다. React + TypeScript 프론트엔드와 Node.js + SQLite 백엔드로 구성되어 있습니다.
 이 프로젝트는 2025년 6월 28일에 실시된 천하제일 입코딩대회에서 Github Copilot, VS Code Speech, https://github.com/lipcoding-kr/lipcoding-competition.git 를 이용하여 생성하였습니다.
 
